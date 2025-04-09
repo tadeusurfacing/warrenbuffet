@@ -17,22 +17,28 @@ def carregar_dados():
             df = pd.read_excel(CAMINHO_PLANILHA, sheet_name="AÇÕES", header=1)
             df = df.dropna(how="all").reset_index(drop=True)
             colunas_renomeadas = {
-                "PAPEL": "Papel", "EMPRESA": "Empresa", "P MÉD": "Preço Médio",
-                "P ATUAL $": "Preço Atual", "P TETO $": "Preço Teto",
-                "TOTAL": "Quantidade", "APORTADO": "Total Investido",
-                "ATUAL": "Valor Atual", "TOTAIS": "Dividendos",
-                "POR AÇÃO": "Dividendos/Ação", "TOTAL %": "Rentabilidade"
+                "PAPEL": "Papel",
+                "EMPRESA": "Empresa",
+                "P MÉD": "Preço Médio",
+                "P ATUAL $": "Preço Atual",
+                # "P TETO $": "Preço Teto",  # Removida a coluna "Preço Teto"
+                "TOTAL": "QTD",  # Alterado de "Quantidade" para "QTD"
+                "APORTADO": "Total Investido",
+                "ATUAL": "Valor Atual",
+                "TOTAIS": "Dividendos",
+                "POR AÇÃO": "DIV/Ação",  # Alterado de "Dividendos/Ação" para "DIV/Ação"
+                "TOTAL %": "Rentabilidade"
             }
             df = df.rename(columns=colunas_renomeadas)
-            df = df[list(colunas_renomeadas.values())].copy()
+            df = df[list(colunas_renomeadas.values())].copy()  # Exclui colunas não listadas, como "Preço Teto"
             df.to_json(CAMINHO_DADOS, orient="records", indent=2)
 
-        df["Quantidade"] = pd.to_numeric(df["Quantidade"], errors="coerce").fillna(0).astype(int)
+        df["QTD"] = pd.to_numeric(df["QTD"], errors="coerce").fillna(0).astype(int)
         df["Total Investido"] = pd.to_numeric(df["Total Investido"], errors="coerce").fillna(0)
         df["Preço Atual"] = np.nan
         df["Valor Atual"] = 0
         df["Rentabilidade"] = 0.0
-        df["PT Bazin"] = pd.to_numeric(df["Dividendos/Ação"], errors="coerce") * (100 / 6)
+        df["PT Bazin"] = pd.to_numeric(df["DIV/Ação"], errors="coerce") * (100 / 6)
         df["PT Bazin"] = df["PT Bazin"].round(2)
 
         return df
@@ -69,7 +75,7 @@ def atualizar_dados_financeiros(df, cache):
             if cotacao and cotacao['preco']:
                 preco_atual = cotacao['preco']
                 df.at[idx, "Preço Atual"] = preco_atual
-                df.at[idx, "Valor Atual"] = round(row["Quantidade"] * preco_atual, 2)
+                df.at[idx, "Valor Atual"] = round(row["QTD"] * preco_atual, 2)
                 if row["Total Investido"] > 0:
                     rentabilidade = ((df.at[idx, "Valor Atual"] - row["Total Investido"]) / row["Total Investido"]) * 100
                     df.at[idx, "Rentabilidade"] = round(rentabilidade, 2)
