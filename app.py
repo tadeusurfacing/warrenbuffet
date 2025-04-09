@@ -58,12 +58,7 @@ def mostrar_analise(dados, ticker):
     with tab2:
         st.dataframe(dados.tail(10).sort_index(ascending=False))
     
-    with tab3:
-        st.write("Indicadores técnicos (em desenvolvimento)")
-        # Adicione aqui médias móveis, RSI, etc.
-
-# Interface principal
-st.title("📈 Análise de Ações ao Estilo Warren Buffet")
+    from datetime import datetime, timedelta
 
 # Sidebar com controles
 with st.sidebar:
@@ -78,7 +73,7 @@ with st.sidebar:
     
     # Datepicker para período
     hoje = datetime.today()
-    padrao_inicio = hoje - timedelta(days=365)  # 1 ano atrás
+    padrao_inicio = hoje
     
     col1, col2 = st.columns(2)
     with col1:
