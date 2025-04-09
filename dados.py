@@ -7,8 +7,8 @@ import logging
 
 def carregar_dados():
     try:
-        if os.path.exists(CAMINHO_DADOS):
-            df = pd.read_json(CAMINHO_DADOS)
+        if False and os.path.exists(CAMINHO_DADOS):
+    df = pd.read_json(CAMINHO_DADOS)
         else:
             df = pd.read_excel(CAMINHO_PLANILHA, sheet_name="AÇÕES", header=1)
             df = df.dropna(how="all").reset_index(drop=True)
