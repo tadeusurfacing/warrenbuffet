@@ -14,6 +14,8 @@ st.title("📊 Monitor de Investimentos")
 cache = CotacaoCache()
 df = carregar_dados()
 
+df = df.drop(index=[20, 21], errors="ignore")
+
 # ✅ Atualizar cotações automaticamente (somente uma vez por sessão)
 if "cotacoes_atualizadas" not in st.session_state:
     df = atualizar_dados_financeiros(df, cache)
