@@ -83,12 +83,12 @@ with st.sidebar:
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input(
-            "Data inicial:", 
+            "Data inicial:",
             value=padrao_inicio,
             max_value=hoje - timedelta(days=1)
     with col2:
         end_date = st.date_input(
-            "Data final:", 
+            "Data final:",
             value=hoje,
             max_value=hoje)
     
