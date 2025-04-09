@@ -58,7 +58,9 @@ def mostrar_analise(dados, ticker):
     with tab2:
         st.dataframe(dados.tail(10).sort_index(ascending=False))
     
-    from datetime import datetime, timedelta
+    with tab3:
+        st.write("Indicadores técnicos (em desenvolvimento)")
+        # Adicione aqui médias móveis, RSI, etc.
 
 # Sidebar com controles
 with st.sidebar:
@@ -73,19 +75,21 @@ with st.sidebar:
     
     # Datepicker para período
     hoje = datetime.today()
-    padrao_inicio = hoje
-    
+    padrao_inicio = hoje - timedelta(days=30)  # exemplo: últimos 30 dias
+
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input(
             "Data inicial:",
             value=padrao_inicio,
             max_value=hoje - timedelta(days=1)
+        )
     with col2:
         end_date = st.date_input(
             "Data final:",
             value=hoje,
-            max_value=hoje)
+            max_value=hoje
+        )
     
     if start_date >= end_date:
         st.error("A data inicial deve ser anterior à data final!")
