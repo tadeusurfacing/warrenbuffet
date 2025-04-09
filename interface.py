@@ -28,13 +28,14 @@ def iniciar_interface(df, cache):
             "Empresa": 140,
             "Preço Médio": 80,
             "Preço Atual": 80,
-            "Quantidade": 70,
+            "QTD": 70,  # Alterado de "Quantidade" para "QTD"
             "Total Investido": 100,
             "Valor Atual": 100,
             "Dividendos": 90,
-            "Dividendos/Ação": 90,
+            "DIV/Ação": 90,  # Alterado de "Dividendos/Ação" para "DIV/Ação"
             "Rentabilidade": 90,
             "PT Bazin": 80
+            # "Preço Teto" foi removido
         }
 
     st.title("Monitor de Investimentos")
