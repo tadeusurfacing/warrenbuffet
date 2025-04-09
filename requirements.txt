@@ -1,7 +1,7 @@
-streamlit
-pandas
+streamlit==1.29.0
+pandas==2.1.1
 numpy
 matplotlib
-yfinance
+yfinance==0.2.28
 reportlab
 openpyxl
