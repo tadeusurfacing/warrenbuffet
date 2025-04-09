@@ -13,7 +13,6 @@ st.set_page_config(
 # Funções auxiliares
 @st.cache_data(ttl=3600)  # Cache por 1 hora
 def buscar_dados(ticker, start_date, end_date):
-    """Busca dados históricos do Yahoo Finance"""
     try:
         dados = yf.download(ticker + '.SA', start=start_date, end=end_date)
         if dados.empty:
@@ -25,7 +24,6 @@ def buscar_dados(ticker, start_date, end_date):
         return None
 
 def calcular_variacao(dados):
-    """Calcula a variação percentual no período"""
     if len(dados) < 2:
         return 0
     primeiro = dados['Close'].iloc[0]
@@ -33,13 +31,11 @@ def calcular_variacao(dados):
     return ((ultimo - primeiro) / primeiro) * 100
 
 def mostrar_analise(dados, ticker):
-    """Exibe a análise dos dados"""
     if dados is None:
         return
     
     st.subheader(f"Análise: {ticker}")
     
-    # Métricas principais
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("Preço Atual", f"R$ {dados['Close'].iloc[-1]:.2f}")
@@ -49,7 +45,6 @@ def mostrar_analise(dados, ticker):
     with col3:
         st.metric("Volume Médio", f"{dados['Volume'].mean():,.0f}")
     
-    # Abas para diferentes visualizações
     tab1, tab2, tab3 = st.tabs(["Gráfico", "Últimos Registros", "Análise Técnica"])
     
     with tab1:
@@ -59,38 +54,37 @@ def mostrar_analise(dados, ticker):
         st.dataframe(dados.tail(10).sort_index(ascending=False))
     
     with tab3:
-        st.write("Indicadores técnicos (em desenvolvimento)")
-        # Adicione aqui médias móveis, RSI, etc.
+        st.write("📉 Indicadores técnicos (em desenvolvimento)")
+        # Futuro: adicionar médias móveis, RSI etc.
 
 # Sidebar com controles
 with st.sidebar:
     st.header("Configurações")
     
-    # Seleção de ação
     ticker = st.selectbox(
         "Selecione a ação:",
         ['PETR4', 'VALE3', 'ITUB4', 'BBDC4', 'BBAS3', 'ABEV3'],
         index=0
     )
     
-    # Datepicker para período
     hoje = datetime.today()
-    padrao_inicio = hoje - timedelta(days=30)  # exemplo: últimos 30 dias
+    ontem = hoje - timedelta(days=1)
+    padrao_inicio = hoje - timedelta(days=30)
 
     col1, col2 = st.columns(2)
     with col1:
         start_date = st.date_input(
             "Data inicial:",
             value=padrao_inicio,
-            max_value=hoje - timedelta(days=1)
+            max_value=ontem
         )
     with col2:
         end_date = st.date_input(
             "Data final:",
-            value=hoje,
-            max_value=hoje
+            value=ontem,
+            max_value=ontem
         )
-    
+
     if start_date >= end_date:
         st.error("A data inicial deve ser anterior à data final!")
         st.stop()
@@ -101,15 +95,13 @@ with st.spinner(f"Carregando dados de {ticker}..."):
 
 if dados is not None:
     mostrar_analise(dados, ticker)
-    
-    # Seção adicional
+
     st.divider()
-    st.subheader("Dados Estatísticos")
+    st.subheader("📊 Dados Estatísticos")
     st.write(dados.describe())
-    
-    # Download dos dados
+
     st.download_button(
-        label="Baixar dados em CSV",
+        label="⬇️ Baixar dados em CSV",
         data=dados.to_csv().encode('utf-8'),
         file_name=f"{ticker}_dados.csv",
         mime="text/csv"
