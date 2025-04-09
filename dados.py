@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import numpy as np
-from tkinter import messagebox
+import streamlit as st
 from config import CAMINHO_DADOS, CAMINHO_PLANILHA
 import logging
 
@@ -34,16 +34,17 @@ def carregar_dados():
         return df
     except Exception as e:
         logging.critical(f"Erro ao carregar dados: {str(e)}", exc_info=True)
-        messagebox.showerror("Erro", f"Falha ao carregar dados:\n{str(e)}")
+        st.error(f"❌ Falha ao carregar dados: {str(e)}")
         raise
 
 def salvar_dados(df):
     try:
         df.to_json(CAMINHO_DADOS, orient="records", indent=2)
         logging.info("Dados salvos com sucesso")
+        st.success("💾 Dados salvos com sucesso!")
     except Exception as e:
         logging.error(f"Erro ao salvar dados: {str(e)}", exc_info=True)
-        messagebox.showerror("Erro", f"Falha ao salvar:\n{str(e)}")
+        st.error(f"❌ Falha ao salvar dados: {str(e)}")
 
 def atualizar_dados_financeiros(df, cache):
     for idx, row in df.iterrows():
