@@ -6,22 +6,19 @@ from cotacoes import CotacaoCache
 from utils import formatar_valores
 from relatorio import exportar_pdf
 
+# Configuração da página
 st.set_page_config(page_title="Monitor de Investimentos", layout="wide")
-st.title("📊 Monitor de Investimentos")
-
 st.title("📊 Monitor de Investimentos")
 
 # Inicializar cache e carregar dados
 cache = CotacaoCache()
 df = carregar_dados()
 
-# 🧼 Limpeza: remover espaços e padronizar códigos dos ativos
+# Limpeza de dados
 df["Papel"] = df["Papel"].astype(str).str.strip().str.upper()
-
-# 🗑️ Excluir linhas 21 e 22 (índices 20 e 21)
 df = df.drop(index=[20, 21], errors="ignore")
 
-# ✅ Atualizar cotações automaticamente (uma vez por sessão)
+# Atualização automática de cotações
 if "cotacoes_atualizadas" not in st.session_state:
     df = atualizar_dados_financeiros(df, cache)
     st.session_state["cotacoes_atualizadas"] = True
@@ -42,13 +39,11 @@ if st.sidebar.button("💾 Salvar Dados"):
 if st.sidebar.button("📄 Exportar PDF"):
     exportar_pdf(df)
 
-# Página: Tabela de Ações
 if pagina == "Ações":
     st.subheader("📋 Tabela de Ações")
     df_formatado = df.apply(formatar_valores, axis=1)
     st.dataframe(df_formatado, use_container_width=True)
 
-# Página: Gráficos
 elif pagina == "Gráficos":
     st.subheader("📈 Rentabilidade por Ativo")
     fig1, ax1 = plt.subplots()
@@ -61,7 +56,6 @@ elif pagina == "Gráficos":
     ax2.set_ylabel("")
     st.pyplot(fig2)
 
-# Página: Análise Geral
 elif pagina == "Análise Geral":
     st.subheader("📊 Análise Geral da Carteira")
     total_investido = df["Total Investido"].sum()
