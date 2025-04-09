@@ -1,6 +1,6 @@
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from tkinter import messagebox
+import streamlit as st
 
 def exportar_pdf(df):
     try:
@@ -30,6 +30,9 @@ def exportar_pdf(df):
                 y = 800
 
         c.save()
-        messagebox.showinfo("Sucesso", f"PDF exportado para:\n{pdf_path}")
+        st.success("📄 PDF exportado com sucesso!")
+        with open(pdf_path, "rb") as file:
+            st.download_button("📥 Baixar PDF", file.read(), file_name=pdf_path)
+
     except Exception as e:
-        messagebox.showerror("Erro", f"Falha ao exportar PDF:\n{str(e)}")
+        st.error(f"❌ Falha ao exportar PDF: {str(e)}")
