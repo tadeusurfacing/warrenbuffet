@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,22 +6,27 @@ from cotacoes import CotacaoCache
 from utils import formatar_valores
 from relatorio import exportar_pdf
 
-# Configuração inicial da página
+# Configuração da página
 st.set_page_config(page_title="Monitor de Investimentos", layout="wide")
 st.title("📊 Monitor de Investimentos")
 
-# Inicialização
+# Inicializar cache e carregar dados
 cache = CotacaoCache()
 df = carregar_dados()
 
-# Sidebar
+# ✅ Atualizar cotações automaticamente (somente uma vez por sessão)
+if "cotacoes_atualizadas" not in st.session_state:
+    df = atualizar_dados_financeiros(df, cache)
+    st.session_state["cotacoes_atualizadas"] = True
+
+# Barra lateral de navegação e ações
 st.sidebar.title("Navegação")
 pagina = st.sidebar.radio("Ir para:", ["Ações", "Gráficos", "Análise Geral"])
 
-# Botões de ação
 st.sidebar.markdown("---")
 if st.sidebar.button("🔄 Atualizar Cotações"):
     df = atualizar_dados_financeiros(df, cache)
+    st.session_state["cotacoes_atualizadas"] = True
     st.success("Cotações atualizadas!")
 
 if st.sidebar.button("💾 Salvar Dados"):
@@ -31,12 +35,13 @@ if st.sidebar.button("💾 Salvar Dados"):
 if st.sidebar.button("📄 Exportar PDF"):
     exportar_pdf(df)
 
-# Conteúdo principal
+# Página de Tabela
 if pagina == "Ações":
     st.subheader("📋 Tabela de Ações")
     df_formatado = df.apply(formatar_valores, axis=1)
     st.dataframe(df_formatado, use_container_width=True)
 
+# Página de Gráficos
 elif pagina == "Gráficos":
     st.subheader("📈 Rentabilidade por Ativo")
     fig1, ax1 = plt.subplots()
@@ -49,6 +54,7 @@ elif pagina == "Gráficos":
     ax2.set_ylabel("")
     st.pyplot(fig2)
 
+# Página de Análise Geral
 elif pagina == "Análise Geral":
     st.subheader("📊 Análise Geral da Carteira")
     total_investido = df["Total Investido"].sum()
