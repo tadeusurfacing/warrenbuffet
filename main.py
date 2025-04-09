@@ -6,8 +6,9 @@ from cotacoes import CotacaoCache
 from utils import formatar_valores
 from relatorio import exportar_pdf
 
-# Configuração da página
 st.set_page_config(page_title="Monitor de Investimentos", layout="wide")
+st.title("📊 Monitor de Investimentos")
+
 st.title("📊 Monitor de Investimentos")
 
 # Inicializar cache e carregar dados
