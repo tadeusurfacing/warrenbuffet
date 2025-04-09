@@ -1,14 +1,18 @@
 import os
 import pandas as pd
 import numpy as np
-import streamlit as st
-from config import CAMINHO_DADOS, CAMINHO_PLANILHA
 import logging
 
+from config import CAMINHO_DADOS, CAMINHO_PLANILHA
+
 def carregar_dados():
+    """
+    Carrega os dados de um arquivo JSON ou Excel.
+    Retorna: DataFrame com os dados.
+    """
     try:
         if False and os.path.exists(CAMINHO_DADOS):
-    df = pd.read_json(CAMINHO_DADOS)
+            df = pd.read_json(CAMINHO_DADOS)
         else:
             df = pd.read_excel(CAMINHO_PLANILHA, sheet_name="AÇÕES", header=1)
             df = df.dropna(how="all").reset_index(drop=True)
@@ -34,19 +38,29 @@ def carregar_dados():
         return df
     except Exception as e:
         logging.critical(f"Erro ao carregar dados: {str(e)}", exc_info=True)
-        st.error(f"❌ Falha ao carregar dados: {str(e)}")
-        raise
+        raise Exception(f"❌ Falha ao carregar dados: {str(e)}")
 
 def salvar_dados(df):
+    """
+    Salva os dados do DataFrame em um arquivo JSON.
+    df: DataFrame com os dados.
+    Retorna: Uma tupla (sucesso, mensagem).
+    """
     try:
         df.to_json(CAMINHO_DADOS, orient="records", indent=2)
         logging.info("Dados salvos com sucesso")
-        st.success("💾 Dados salvos com sucesso!")
+        return True, "💾 Dados salvos com sucesso!"
     except Exception as e:
         logging.error(f"Erro ao salvar dados: {str(e)}", exc_info=True)
-        st.error(f"❌ Falha ao salvar dados: {str(e)}")
+        return False, f"❌ Falha ao salvar dados: {str(e)}"
 
 def atualizar_dados_financeiros(df, cache):
+    """
+    Atualiza os dados financeiros no DataFrame usando o cache.
+    df: DataFrame com os dados.
+    cache: Objeto de cache para cotações.
+    Retorna: DataFrame atualizado.
+    """
     for idx, row in df.iterrows():
         papel = row["Papel"]
         ticker = f"{papel}.SA" if not str(papel).endswith(".SA") else papel
